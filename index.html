@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Calculadora de Precisão</title>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4 font-sans">
+
+    <div class="w-full max-w-sm bg-white rounded-[2.5rem] shadow-2xl p-8 border border-gray-100">
+        <header class="mb-8">
+            <h1 class="text-2xl font-black text-gray-800 tracking-tight text-center">Calculadora Comercial</h1>
+            <p class="text-center text-gray-400 text-sm mt-1">Precisão de centavos e %</p>
+        </header>
+
+        <div class="space-y-6">
+            <!-- Input Valor Original -->
+            <div class="relative">
+                <label class="text-xs font-bold text-indigo-600 uppercase ml-1">Preço Original</label>
+                <input id="displayOriginal" type="text" placeholder="R$ 0,00" oninput="handleInput(this)"
+                    class="w-full px-5 py-4 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-indigo-500 focus:bg-white outline-none text-xl font-bold transition-all">
+            </div>
+
+            <!-- Input Novo Valor -->
+            <div class="relative">
+                <label class="text-xs font-bold text-emerald-600 uppercase ml-1">Preço com Desconto</label>
+                <input id="displayNovo" type="text" placeholder="R$ 0,00" oninput="handleInput(this)"
+                    class="w-full px-5 py-4 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-emerald-500 focus:bg-white outline-none text-xl font-bold transition-all">
+            </div>
+
+            <!-- Painel de Resultados -->
+            <div class="bg-slate-900 rounded-3xl p-6 text-white shadow-lg space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-slate-400 text-sm">Porcentagem OFF:</span>
+                    <span id="resPercent" class="text-3xl font-black text-yellow-400">0,00%</span>
+                </div>
+                <div class="flex justify-between items-center border-t border-slate-700 pt-4">
+                    <span class="text-slate-400 text-sm">Economia real:</span>
+                    <span id="resDinheiro" class="text-lg font-bold text-emerald-400">R$ 0,00</span>
+                </div>
+            </div>
+
+            <!-- Botão Limpar -->
+            <button onclick="limparCampos()"
+                class="w-full py-4 text-gray-500 font-bold uppercase text-xs tracking-widest hover:text-red-500 transition-colors">
+                Limpar Lançamentos
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function formatarMoeda(valor) {
+            let v = valor.replace(/\D/g, '');
+            v = (v / 100).toFixed(2).replace('.', ',');
+            return "R$ " + v.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        function limparValor(valorStr) {
+            return parseFloat(valorStr.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+        }
+
+        function handleInput(el) {
+            const valorPuro = el.value;
+            el.value = formatarMoeda(valorPuro);
+            calcular();
+        }
+
+        function calcular() {
+            const original = limparValor(document.getElementById('displayOriginal').value);
+            const novo = limparValor(document.getElementById('displayNovo').value);
+
+            const resPercent = document.getElementById('resPercent');
+            const resDinheiro = document.getElementById('resDinheiro');
+
+            if (original > 0) {
+                const economia = original - novo;
+                const porcentagem = (economia / original) * 100;
+
+                resPercent.innerText = porcentagem.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
+                resDinheiro.innerText = 'R$ ' + economia.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            } else {
+                resPercent.innerText = '0,00%';
+                resDinheiro.innerText = 'R$ 0,00';
+            }
+        }
+
+        function limparCampos() {
+            document.getElementById('displayOriginal').value = '';
+            document.getElementById('displayNovo').value = '';
+            document.getElementById('resPercent').innerText = '0,00%';
+            document.getElementById('resDinheiro').innerText = 'R$ 0,00';
+        }
+    </script>
+</body>
+
+</html>
